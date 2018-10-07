@@ -1,0 +1,6 @@
+{
+  "env": {
+    "MONGO_ATLAS_PW": "node-admin",
+    "JWT_KEY": "AYAYA"
+  }
+}
