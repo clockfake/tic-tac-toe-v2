@@ -14,15 +14,17 @@ export default class GameList extends Component {
     this.setState({fetchedData: resp.data.games});
   }
 
-  // handleSelect(tab) {
-  //   if (tab === 0)
-  // }
+  createGame = async () => {
+    const resp = await axios.post(`${apiLink}/api/creategame`);
+    this.props.history.push(`/game/${resp.data.game._id}`);
+  }
 
   render() {
+    if (!this.state.fetchedData) return <p>Loading...</p>;
     return (
+      <React.Fragment>
       <div>
-        <p>Open games</p>
-        // <p>Recently finished games</p>
+        <p>Open games:</p>
       </div>
       <div>
         {this.state.fetchedData.map(i => (
@@ -36,7 +38,9 @@ export default class GameList extends Component {
             </p>
           </div>
         ))}
+        <button onClick={this.createGame}>Create game</button>
       </div>
+      </React.Fragment>
     )
   }
 }

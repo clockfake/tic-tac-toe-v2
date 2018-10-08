@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import io from 'socket.io-client';
-import { apiLink } from './constants';
+import { Switch, Route } from 'react-router-dom';
 import GameList from './components/GameList.jsx';
 import GameInstance from './components/GameInstance.jsx';
 

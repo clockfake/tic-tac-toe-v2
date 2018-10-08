@@ -1,0 +1,68 @@
+body {
+  background-color: #eee;
+}
+
+p {
+  font-size: 24px;
+}
+
+.game__board {
+  display:block;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.game__panel {
+  display: flex;
+  justify-content: space-between;
+  max-width: 650px;
+}
+
+.game__turn-helper {
+  font-size: 24px;
+  margin-left: 15px;
+  margin-top: 5px;
+}
+
+.game__to-prev-turn {
+  margin-left: 10px;
+  padding: 12px;
+
+  background-color: #333;
+  color: #ddd;
+  border: none;
+  border-radius: 4px;
+
+  cursor: pointer;
+}
+
+.game__board-cell {
+  margin:0;
+  padding:0;
+
+  width: 25px;
+  height: 25px;
+
+  border: 2px solid #004813;
+  background-color: #62BA79;
+
+  font-family: 'Open Sans', sans-serif;;
+  font-weight: bold;
+  font-size: 18px;
+  color: #111;
+
+  text-align: center;
+  vertical-align: middle;
+
+  cursor:pointer;
+}
+
+tr:nth-child(2n-1) .game__board-cell:nth-child(2n), tr:nth-child(2n) .game__board-cell:nth-child(2n-1) {
+  background-color: #4FA564;
+}
+
+.rules {
+  font-size: 16px;
+  margin-top: 30px;
+  margin-left: 10px;
+}
