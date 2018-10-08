@@ -5,7 +5,6 @@ export default async (ctx, next) => {
         console.log('mw error', err.message);
         ctx.status = err.statusCode || err.status || 500;
         ctx.body = {
-            // success: false,
             message: err.message,
         };
     }
