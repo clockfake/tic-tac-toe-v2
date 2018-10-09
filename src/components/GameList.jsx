@@ -19,15 +19,14 @@ export default class GameList extends Component {
     this.props.history.push(`/game/${resp.data.game._id}`);
   }
 
-  // deleteGame = async () => {
-  //   const resp = await axios.post(`${apiLink}/api/deletegame`, {
-  //
-  //   });
-
-  // }
-
   render() {
     if (!this.state.fetchedData) return <p>Loading...</p>;
+    if (this.state.fetchedData.length === 0) return (
+      <>
+      <p>Open games list is currently empty...</p>
+      <button onClick={this.createGame}>Create game</button>
+      </>
+    );
     return (
       <React.Fragment>
       <div>
@@ -39,7 +38,7 @@ export default class GameList extends Component {
             <div key={i._id}>
               <p>{i.createdAt}</p>
               <p> Existing players:
-              {i.playerX !== null && 'X'}
+              {i.playerX && 'X'}
               {i.playerO && 'O'}
               </p>
               <Link to={`/game/${i._id}`}>Join game</Link>

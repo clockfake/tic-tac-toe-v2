@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/board.css';
+import '../css/Board.css';
 import imgO from '../imgs/O.png';
 import imgX from '../imgs/X.png';
 
@@ -8,10 +8,10 @@ const Board = ({board, makeTurn}) => (
     <tbody>
     {board.map((row,rowIndex) => (
       <tr key = {rowIndex}>
-        {row.map((j,colIndex) => {
+        {row.map((cell,colIndex) => {
           let cellState = null;
-          if (j===1) cellState = imgX;
-          if (j===2) cellState = imgO;
+          if (cell===1) cellState = imgX;
+          if (cell===2) cellState = imgO;
           return (
             <td
               key={colIndex}

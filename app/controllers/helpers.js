@@ -1,6 +1,3 @@
-// import maxRows from '../app';
-// import maxCols from '../app';
-
 const maxRows = 24;
 const maxCols = 24;
 

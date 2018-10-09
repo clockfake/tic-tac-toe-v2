@@ -7,11 +7,13 @@ const router = new Router();
 
 router.get('/api/viewopen', gameController.viewOpenGames)
 router.post('/api/creategame', gameController.createGame)
+router.get('/api/purge', gameController.purge)
 
-router.get('*', async function(ctx, next) {
-  var html = fs.readFileSync(path.resolve('./build/index.html'));
-  ctx.type = 'html';
-  ctx.body = html;
+router.get('*', async function(ctx) {
+  // var html = fs.readFileSync(path.resolve('./build/index.html'));
+  // ctx.type = 'html';
+  // ctx.body = html;
+  ctx.throw(500, {message: 'No such route'});
 });
 
 export default router

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
+import { Link } from 'react-router-dom';
 import { apiLink } from '../constants';
 import uniqid from 'uniqid';
 import Board from './Board.jsx';
@@ -8,26 +9,26 @@ export default class GameInstance extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      playerX: null,
+      playerO: null,
       serverResp: null,
       board: null,
       currentTurn: false,
       winner: false,
       playerId: null
     }
-    // let id = window.localStorage.getItem(this.props.match.params.id);
-    // console.log(id);
-    // this.socket = id ? io(apiLink) : io(`${apiLink}/${this.props.match.params.id}`);
-    this.socket = io(apiLink);
-    console.log(this.socket);
+    this.socket = io(`${apiLink}`);
+    this.socket.on('ask for gameid', (cb) => {
+      cb(this.props.match.params.id);
+    });
     this.socket.on('join game fail', (response) => {
       this.setState({serverResp: response});
     });
-    this.socket.on('join game success', (response) => {
-      window.localStorage.setItem(this.props.match.params.id, response);
-      this.setState({playerId: response});
+    this.socket.on('join game success', (response, playerType, playerId) => {
+      this.setState({serverResp: response, [playerType]:playerId });
     });
     this.socket.on('game start', (response) => {
-      this.setState({board: response, serverResp: ''});
+      this.setState({board: JSON.parse(response), serverResp: ''});
     });
     this.socket.on('make turn fail', (response) => {
       this.setState({serverResp: response});
@@ -44,26 +45,43 @@ export default class GameInstance extends Component {
       }));
     });
     this.socket.on('game end', (message) => {
-      this.setState({winner: message})
+      this.setState({winner: message});
     });
   }
 
   componentDidMount() {
-    const id = window.localStorage.getItem(this.props.match.params.id);
-    this.socket.emit('get game status', this.props.match.params.id, (data) => {
-      if (typeof data !== 'string') this.setState({board: data});
+    let id = window.localStorage.getItem('id');
+    if (!id) {
+      id = uniqid();
+      window.localStorage.setItem('id', id);
+    }
+    this.setState({playerId: id});
+    this.socket.emit('get game status', this.props.match.params.id, (status, payload) => {
+      switch (status) {
+        case 'hosted':
+          return this.setState({
+            playerX: payload.playerX,
+            playerO: payload.playerO
+          });
+        case 'playing':
+          return this.setState({
+            board: JSON.parse(payload.board),
+            currentTurn: payload.currentTurn
+          });
+        case 'finished':
+          return this.setState({
+            winner: payload.winner
+          });
+        default:;
+      }
     });
-    if (!this.state.playerId && id) this.setState({playerId: id});
   }
 
   joinGame = (joinAs) => {
-    let id = window.localStorage.getItem(this.props.match.params.id);
-    if (!id) id = this.state.playerId;
-    if (!id) id = uniqid();
     this.socket.emit('join game', {
       playerType: joinAs,
       gameId: this.props.match.params.id,
-      playerId: id
+      playerId: this.state.playerId
     });
   }
 
@@ -77,11 +95,16 @@ export default class GameInstance extends Component {
   }
 
   render() {
-    if (this.state.winner) return <p>{this.state.winner}</p>
+    if (this.state.winner) return (
+      <div>
+        <p>{this.state.winner}</p>
+        <Link to="/">Back to main page</Link>
+      </div>
+    );
     if (!this.state.board) return (
         <div className="App">
-          <button onClick={() => this.joinGame(false)}>join game as X</button>
-          <button onClick={() => this.joinGame(true)}>join game as Y</button>
+          <button disabled={this.state.playerX !==null} onClick={() => this.joinGame(false)}>join game as X</button>
+          <button disabled={this.state.playerO !==null} onClick={() => this.joinGame(true)}>join game as Y</button>
           <p>{this.state.serverResp}</p>
         </div>
       );

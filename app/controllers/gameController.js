@@ -9,11 +9,16 @@ export default {
   async createGame(ctx) {
     const game = new Game({
       status: 'hosted',
-      board: generateBoard()
+      board: JSON.stringify(generateBoard())
     });
     await game.save();
     ctx.body = { game };
   },
+
+  async purge(ctx) {
+    await Game.deleteMany({});
+    ctx.body = {message: 'Let none survive!'};
+  }
 }
 
 function generateBoard() {
