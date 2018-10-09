@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/board.scss';
+import '../css/board.css';
 import imgO from '../imgs/O.png';
 import imgX from '../imgs/X.png';
 
@@ -12,6 +12,7 @@ const Board = ({board, makeTurn}) => (
           let cellState = null;
           if (j==1) cellState = imgX;
           if (j==2) cellState = imgO;
+          if (j) console.log(j);
           return (
             <td key={colIndex} style={{backgroundImage: cellState}} className="game__board-cell" onClick={() => makeTurn(rowIndex,colIndex)}></td>
           )

@@ -3,6 +3,13 @@ import winCheck from './helpers';
 
 export default (io) => {
   io.on('connection', (socket) => {
+
+    socket.on('get game status', async (id, cb) => {
+      const game = await Game.findById(id);
+      if (game.status === 'playing') return cb(game.board);
+      return cb(game.status);
+    });
+
     socket.on('join game', async (payload) => {
       const game = await Game.findById(payload.gameId);
       console.log('attempt to join game with ',payload);
@@ -24,13 +31,13 @@ export default (io) => {
 
     socket.on('make turn', async (payload) => {
       const game = await Game.findById(payload.id);
-      if (game.currentTurn !== payload.playerType) return socket.emit('make turn fail', 'Не ваш ход');
       if (game.status !== 'playing') return socket.emit('make turn fail', 'Нельзя совершить ход в этой игре');
-      if (game[matchPlayer(payload.playerType)] !== socket.id) return socket.emit('make turn fail', 'Ошибка сокета');
+      if (game[matchPlayer(game.currentTurn)] !== payload.playerId) return socket.emit('make turn fail', 'Не ваш ход');
       if (game.board[+payload.row][+payload.col] !== 0) socket.emit('make turn fail', 'Поле не пустое');
-      game.board[+payload.row][+payload.col] = Number(payload.playerType)+1;
+      game.board[+payload.row][+payload.col] = Number(game.currentTurn)+1;
       game.currentTurn = !game.currentTurn;
       await game.save();
+      console.log(game.board);
       io.to(game._id).emit('make turn success', {row: payload.row, col: payload.col, type: Number(payload.playerType)+1});
       if (winCheck(game.board, payload.row, payload.col)) {
         game.status = 'finished';

@@ -8,9 +8,19 @@ export default {
 
   async createGame(ctx) {
     const game = new Game({
-      status: 'hosted'
+      status: 'hosted',
+      board: generateArrays()
     });
     await game.save();
     ctx.body = { game };
   },
+}
+
+function generateArrays() {
+  let arr = [];
+  for (let i = 0; i<24; i++) {
+    const row = new Array(24).fill(0);
+    arr.push(row);
+  }
+  return arr;
 }

@@ -11,14 +11,16 @@ export default class GameInstance extends Component {
       serverResp: null,
       board: null,
       currentTurn: false,
-      winner: false
+      winner: false,
+      playerId: null
     }
     this.socket = io(apiLink);
     this.socket.on('join game fail', (response) => {
       this.setState({serverResp: response});
     });
     this.socket.on('join game success', (response) => {
-      window.localstorage.setItem(this.props.match.params.id, response);
+      window.localStorage.setItem(this.props.match.params.id, response);
+      this.setState({playerId: response});
     });
     this.socket.on('game start', (response) => {
       this.setState({board: response, serverResp: ''});
@@ -27,9 +29,9 @@ export default class GameInstance extends Component {
       this.setState({serverResp: response});
     });
     this.socket.on('make turn success', (payload) => {
-      const newRow = [...this.state.board[payload.row]];
-      newRow[payload.col] = payload.type;
       let board = this.state.board;
+      let newRow = [...board[payload.row]];
+      newRow[payload.col] = payload.type;
       board[payload.row] = newRow;
       this.setState(({currentTurn}) => ({
         board,
@@ -42,8 +44,18 @@ export default class GameInstance extends Component {
     });
   }
 
+  componentDidMount() {
+    const id = window.localStorage.getItem(this.props.match.params.id);
+    this.socket.emit('get game status', this.props.match.params.id, (data) => {
+      if (typeof data !== 'string') this.setState({board: data});
+    });
+    if (!this.state.playerId && id) this.setState({playerId: id});
+  }
+
   joinGame = (joinAs) => {
-    const id = uniqid();
+    let id = window.localStorage.getItem(this.props.match.params.id);
+    if (!id) id = this.state.playerId;
+    if (!id) id = uniqid();
     this.socket.emit('join game', {
       playerType: joinAs,
       gameId: this.props.match.params.id,
@@ -52,10 +64,12 @@ export default class GameInstance extends Component {
   }
 
   makeTurn = (row, col) => {
+    console.log(row,col);
     this.socket.emit('make turn', {
-      playerType: this.state.currentTurn,
-      row: this.state.row,
-      col: this.state.col
+      id: this.props.match.params.id,
+      row: row,
+      col: col,
+      playerId: this.state.playerId
     });
   }
 
@@ -71,6 +85,7 @@ export default class GameInstance extends Component {
     return (
       <div className="App">
       <Board board={this.state.board} makeTurn={(row, col) => this.makeTurn(row, col)}/>
+      <p>Current turn: {this.state.currentTurn? 'O' : 'X'}</p>
       <p>{this.state.serverResp}</p>
       </div>
     )
