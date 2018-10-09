@@ -25,8 +25,8 @@ app.use(cors(corsOptions))
 
 const server = require('http').createServer(app.callback());
 
-server.listen(3100, () => {
-  console.log('App is listening at port %d', 3100);
+server.listen(3200, () => {
+  console.log('App is listening at port %d', 3200);
 });
 
 const io = socketIo(server);

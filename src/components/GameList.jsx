@@ -35,7 +35,6 @@ export default class GameList extends Component {
       </div>
       <div>
         {this.state.fetchedData.map(i => {
-          console.log(i);
           return (
             <div key={i._id}>
               <p>{i.createdAt}</p>

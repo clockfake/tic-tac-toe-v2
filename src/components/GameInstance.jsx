@@ -14,7 +14,11 @@ export default class GameInstance extends Component {
       winner: false,
       playerId: null
     }
+    // let id = window.localStorage.getItem(this.props.match.params.id);
+    // console.log(id);
+    // this.socket = id ? io(apiLink) : io(`${apiLink}/${this.props.match.params.id}`);
     this.socket = io(apiLink);
+    console.log(this.socket);
     this.socket.on('join game fail', (response) => {
       this.setState({serverResp: response});
     });
@@ -64,7 +68,6 @@ export default class GameInstance extends Component {
   }
 
   makeTurn = (row, col) => {
-    console.log(row,col);
     this.socket.emit('make turn', {
       id: this.props.match.params.id,
       row: row,

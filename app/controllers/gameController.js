@@ -9,14 +9,14 @@ export default {
   async createGame(ctx) {
     const game = new Game({
       status: 'hosted',
-      board: generateArrays()
+      board: generateBoard()
     });
     await game.save();
     ctx.body = { game };
   },
 }
 
-function generateArrays() {
+function generateBoard() {
   let arr = [];
   for (let i = 0; i<24; i++) {
     const row = new Array(24).fill(0);

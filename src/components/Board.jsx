@@ -10,11 +10,15 @@ const Board = ({board, makeTurn}) => (
       <tr key = {rowIndex}>
         {row.map((j,colIndex) => {
           let cellState = null;
-          if (j==1) cellState = imgX;
-          if (j==2) cellState = imgO;
-          if (j) console.log(j);
+          if (j===1) cellState = imgX;
+          if (j===2) cellState = imgO;
           return (
-            <td key={colIndex} style={{backgroundImage: cellState}} className="game__board-cell" onClick={() => makeTurn(rowIndex,colIndex)}></td>
+            <td
+              key={colIndex}
+              style={{backgroundImage: `url(${cellState})`}}
+              className="game__board-cell"
+              onClick={() => makeTurn(rowIndex,colIndex)}
+            />
           )
         })}
       </tr>
