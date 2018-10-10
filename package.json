@@ -30,7 +30,7 @@
     "node": "v10.10.0"
   },
   "scripts": {
-    "start": "node app/entry.js",
+    "start": "nodemon app/entry.js",
     "serve": "react-scripts start",
     "build": "react-scripts build",
     "server": "nodemon app/entry.js",
