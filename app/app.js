@@ -29,8 +29,8 @@ app.use(serve(path.resolve(__dirname, '../build/')))
 
 const server = require('http').createServer(app.callback());
 
-server.listen(3200, () => {
-  console.log('App is listening at port %d', 3200);
+server.listen(process.env.PORT || 3200, () => {
+  console.log('App is listening at port %d', process.env.PORT || 3200);
 });
 
 const io = socketIo(server);
