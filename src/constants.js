@@ -1,1 +1,1 @@
-export const apiLink = `http://localhost:3200`;
+export const apiLink = window.location.href;

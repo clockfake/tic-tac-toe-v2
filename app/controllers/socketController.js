@@ -34,10 +34,10 @@ export default (io) => {
     socket.on('make turn', async (payload) => {
       let game = await Game.findById(payload.id);
       let board = JSON.parse(game.board);
-      if (game.status !== 'playing') return socket.emit('make turn fail', 'Нельзя совершить ход в этой игре');
+      if (game.status !== 'playing') return socket.emit('make turn fail', 'Game is not being played currently');
       console.log(game[matchPlayer(game.currentTurn)], payload.playerId);
-      if (game[matchPlayer(game.currentTurn)] !== payload.playerId) return socket.emit('make turn fail', 'Не ваш ход');
-      if (board[+payload.row][+payload.col] !== 0) return socket.emit('make turn fail', 'Поле не пустое');
+      if (game[matchPlayer(game.currentTurn)] !== payload.playerId) return socket.emit('make turn fail', 'Not your turn');
+      if (board[+payload.row][+payload.col] !== 0) return socket.emit('make turn fail', 'This field is not empty');
       board[+payload.row][+payload.col]=Number(game.currentTurn)+1;
       game.board = JSON.stringify(board);
       game.currentTurn = !game.currentTurn;

@@ -7,6 +7,6 @@ const gameSchema = mongoose.Schema({
   playerX: { type: String, default: null },
   playerO: { type: String, default: null },
   winner: { type: String }
-});
+}, { timestamps: true });
 
 export default mongoose.model('game', gameSchema);

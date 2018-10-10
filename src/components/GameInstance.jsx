@@ -5,7 +5,17 @@ import { apiLink } from '../constants';
 import uniqid from 'uniqid';
 import Board from './Board.jsx';
 
-export default class GameInstance extends Component {
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+  button: {
+    margin: '10px'
+  }
+});
+
+class GameInstance extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,7 +27,7 @@ export default class GameInstance extends Component {
       winner: false,
       playerId: null
     }
-    this.socket = io(`${apiLink}`);
+    this.socket = io();
     this.socket.on('ask for gameid', (cb) => {
       cb(this.props.match.params.id);
     });
@@ -57,6 +67,7 @@ export default class GameInstance extends Component {
     }
     this.setState({playerId: id});
     this.socket.emit('get game status', this.props.match.params.id, (status, payload) => {
+      console.log(status,payload);
       switch (status) {
         case 'hosted':
           return this.setState({
@@ -70,7 +81,8 @@ export default class GameInstance extends Component {
           });
         case 'finished':
           return this.setState({
-            winner: payload.winner
+            winner: payload.winner,
+            board: JSON.parse(payload.board)
           });
         default:;
       }
@@ -86,6 +98,7 @@ export default class GameInstance extends Component {
   }
 
   makeTurn = (row, col) => {
+    if (this.state.winner) return;
     this.socket.emit('make turn', {
       id: this.props.match.params.id,
       row: row,
@@ -95,21 +108,16 @@ export default class GameInstance extends Component {
   }
 
   render() {
-    if (this.state.winner) return (
-      <div>
-        <p>{this.state.winner}</p>
-        <Link to="/">Back to main page</Link>
-      </div>
-    );
     if (!this.state.board) return (
-        <div className="App">
-          <button disabled={this.state.playerX !==null} onClick={() => this.joinGame(false)}>join game as X</button>
-          <button disabled={this.state.playerO !==null} onClick={() => this.joinGame(true)}>join game as Y</button>
+        <div>
+          <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerX !==null} onClick={() => this.joinGame(false)}>join game as X</Button>
+          <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerO !==null} onClick={() => this.joinGame(true)}>join game as O</Button>
           <p>{this.state.serverResp}</p>
         </div>
       );
     return (
-      <div className="App">
+      <div>
+      {this.state.winner && <Typography variant="h6">{this.state.winner}</Typography>}
       <Board board={this.state.board} makeTurn={(row, col) => this.makeTurn(row, col)}/>
       <p>Current turn: {this.state.currentTurn? 'O' : 'X'}</p>
       <p>{this.state.serverResp}</p>
@@ -117,3 +125,5 @@ export default class GameInstance extends Component {
     )
   }
 }
+
+export default withStyles(styles)(GameInstance);

@@ -1,8 +1,9 @@
 import Game from '../models/game';
 
 export default {
-  async viewOpenGames(ctx) {
-    const games = await Game.find({status: 'hosted'});
+  async viewGames(ctx) {
+    const { type = 'hosted' } = ctx.request.query;
+    const games = await Game.find({status: type});
     ctx.body = { games };
   },
 
