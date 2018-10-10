@@ -1,17 +1,27 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
-import { apiLink } from '../constants';
+// import { apiLink } from '../constants';
 import uniqid from 'uniqid';
 import Board from './Board.jsx';
 
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
 
 const styles = theme => ({
   button: {
     margin: '10px'
+  },
+  field: {
+    display: 'flex',
+    flexShrink: 0,
+    justifyContent: 'space-around'
+  },
+  info: {
+    flex: 2
   }
 });
 
@@ -38,7 +48,7 @@ class GameInstance extends Component {
       this.setState({serverResp: response, [playerType]:playerId });
     });
     this.socket.on('game start', (response) => {
-      this.setState({board: JSON.parse(response), serverResp: ''});
+      this.setState({board: JSON.parse(response), serverResp: null});
     });
     this.socket.on('make turn fail', (response) => {
       this.setState({serverResp: response});
@@ -50,7 +60,6 @@ class GameInstance extends Component {
       board[payload.row] = newRow;
       this.setState(({currentTurn}) => ({
         board,
-        serverResp: 'turn successfull',
         currentTurn: !currentTurn
       }));
     });
@@ -67,7 +76,6 @@ class GameInstance extends Component {
     }
     this.setState({playerId: id});
     this.socket.emit('get game status', this.props.match.params.id, (status, payload) => {
-      console.log(status,payload);
       switch (status) {
         case 'hosted':
           return this.setState({
@@ -77,14 +85,16 @@ class GameInstance extends Component {
         case 'playing':
           return this.setState({
             board: JSON.parse(payload.board),
-            currentTurn: payload.currentTurn
+            currentTurn: payload.currentTurn,
+            playerX: payload.playerX,
+            playerO: payload.playerO
           });
         case 'finished':
           return this.setState({
             winner: payload.winner,
             board: JSON.parse(payload.board)
           });
-        default:;
+        default: return null;
       }
     });
   }
@@ -99,6 +109,9 @@ class GameInstance extends Component {
 
   makeTurn = (row, col) => {
     if (this.state.winner) return;
+    const player = this.state.currentTurn ? 'playerO' : 'playerX';
+    console.log()
+    if (this.state[player] !== this.state.playerId) return;
     this.socket.emit('make turn', {
       id: this.props.match.params.id,
       row: row,
@@ -107,23 +120,51 @@ class GameInstance extends Component {
     });
   }
 
+  closeSnackbar = () => {
+    this.setState({serverResp: null});
+  }
+
+  snackBar = () => (
+    <Snackbar
+    anchorOrigin={{
+    vertical: 'bottom',
+      horizontal: 'left',
+    }}
+    open={this.state.serverResp !== null}
+    autoHideDuration={3000}
+    onClose={this.closeSnackbar}
+    message={<span>{this.state.serverResp}</span>}
+    action={
+      <IconButton
+        key="close"
+        aria-label="Close"
+        color="inherit"
+        onClick={this.handleClose}
+      >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+      </IconButton>
+    }
+  />);
+
   render() {
     if (!this.state.board) return (
         <div>
           <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerX !==null} onClick={() => this.joinGame(false)}>join game as X</Button>
           <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerO !==null} onClick={() => this.joinGame(true)}>join game as O</Button>
-          <p>{this.state.serverResp}</p>
+          {this.snackBar()}
         </div>
       );
     return (
-      <div>
-      {this.state.winner && <Typography variant="h6">{this.state.winner}</Typography>}
+      <div className={this.props.classes.field}>
       <Board board={this.state.board} makeTurn={(row, col) => this.makeTurn(row, col)}/>
-      <p>Current turn: {this.state.currentTurn? 'O' : 'X'}</p>
-      <p>{this.state.serverResp}</p>
+      <div className={this.props.classes.info}>
+      {this.state.winner && <Typography variant="h6">Game is finished, winner is {this.state.winner}</Typography>}
+      {this.state.winner && <Button variant="outlined" color="primary" component={Link} to="/">Back to main page</Button>}
+      {!this.state.winner && <p>Current turn: {this.state.currentTurn ? 'O' : 'X'}</p>}
+      {this.snackBar()}
+      </div>
       </div>
     )
   }
 }
-
 export default withStyles(styles)(GameInstance);

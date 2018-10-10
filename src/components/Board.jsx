@@ -5,22 +5,18 @@ import imgX from '../imgs/X.png';
 
 const Board = ({board, makeTurn}) => (
   <table className="game__board">
-    <tbody>
+    <tbody className="game__table">
     {board.map((row,rowIndex) => (
       <tr key = {rowIndex}>
-        {row.map((cell,colIndex) => {
-          let cellState = null;
-          if (cell===1) cellState = imgX;
-          if (cell===2) cellState = imgO;
-          return (
+        {row.map((cell,colIndex) => (
             <td
               key={colIndex}
-              style={{backgroundImage: `url(${cellState})`}}
+              style={{backgroundImage: `url(${cell === 1 ? imgX : cell === 2 ? imgO : ''})`}}
               className="game__board-cell"
               onClick={() => makeTurn(rowIndex,colIndex)}
             />
           )
-        })}
+        )}
       </tr>
       )
     )}

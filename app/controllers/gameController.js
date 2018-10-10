@@ -3,7 +3,7 @@ import Game from '../models/game';
 export default {
   async viewGames(ctx) {
     const { type = 'hosted' } = ctx.request.query;
-    const games = await Game.find({status: type});
+    const games = await Game.find({status: type}).sort({createdAt: -1});
     ctx.body = { games };
   },
 

@@ -26,8 +26,12 @@
     "socket.io-client": "^2.1.1",
     "uniqid": "^5.0.3"
   },
+  "engines": {
+    "node": "v10.10.0"
+  },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node app/entry.js",
+    "serve": "react-scripts start",
     "build": "react-scripts build",
     "server": "nodemon app/entry.js",
     "test": "react-scripts test",

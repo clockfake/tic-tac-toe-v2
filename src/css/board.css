@@ -1,7 +1,13 @@
 .game__board {
-  display:block;
+  display:flex;
+  justify-content: center;
+  flex: 4;
   border-collapse: collapse;
   margin-bottom: 15px;
+}
+
+.game__table {
+  margin: 0 auto;
 }
 
 .game__panel {

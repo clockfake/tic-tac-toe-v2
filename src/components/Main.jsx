@@ -9,9 +9,18 @@ import Tab from '@material-ui/core/Tab';
 // import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
 
+const styles = theme => ({
+  list: {
+    padding: '10px'
+  },
+  field: {
+    margin: '10px'
+  }
+});
 
-export default class GameList extends Component {
+class Main extends Component {
   state = {
     fetchedData: null,
     selectedTab: 0
@@ -57,18 +66,20 @@ export default class GameList extends Component {
       </AppBar>
       {
         !this.state.fetchedData ? <CircularProgress/> :
-        <div>
+        <div className={this.props.classes.list}>
           {
             this.state.fetchedData.length === 0 ? <p>List is currently empty...</p>
             : this.state.fetchedData.map(i => {
                return (
                  <div key={i._id}>
-                   <p>{i.createdAt}</p>
-                   <p> Existing players:
+                   <span className={this.props.classes.field}>{new Date(i.createdAt).toLocaleString('ru')}</span>
+                   {i.winner && <span className={this.props.classes.field}>Winner: {i.winner}</span>}
+                   {i.status === 'hosted' && <p>
+                   Joinend players:
                    {i.playerX && 'X'}
                    {i.playerO && 'O'}
-                   </p>
-                   <Button variant="outlined" component={Link} to={`/game/${i._id}`}>Join game</Button>
+                   </p>}
+                   <Button className={this.props.classes.field} variant="outlined" component={Link} to={`/game/${i._id}`}>Join game</Button>
                  </div>
                )
              })
@@ -81,3 +92,5 @@ export default class GameList extends Component {
     )
   }
 }
+
+export default withStyles(styles)(Main);

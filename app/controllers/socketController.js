@@ -45,7 +45,7 @@ export default (io) => {
       io.to(game._id).emit('make turn success', {row: payload.row, col: payload.col, type: Number(!game.currentTurn)+1});
 
       if (winCheck(board, payload.row, payload.col)) {
-        const winner = `Игра закончена, победитель ${matchPlayer(!game.currentTurn).slice(6,7)}`;
+        const winner = `${matchPlayer(!game.currentTurn).slice(6,7)}`;
         game.status = 'finished';
         game.winner = winner;
         await game.save();
