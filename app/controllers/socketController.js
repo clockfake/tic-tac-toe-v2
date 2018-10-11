@@ -35,7 +35,6 @@ export default (io) => {
       let game = await Game.findById(payload.id);
       let board = JSON.parse(game.board);
       if (game.status !== 'playing') return socket.emit('make turn fail', 'Game is not being played currently');
-      console.log(game[matchPlayer(game.currentTurn)], payload.playerId);
       if (game[matchPlayer(game.currentTurn)] !== payload.playerId) return socket.emit('make turn fail', 'Not your turn');
       if (board[+payload.row][+payload.col] !== 0) return socket.emit('make turn fail', 'This field is not empty');
       board[+payload.row][+payload.col]=Number(game.currentTurn)+1;
@@ -45,9 +44,8 @@ export default (io) => {
       io.to(game._id).emit('make turn success', {row: payload.row, col: payload.col, type: Number(!game.currentTurn)+1});
 
       if (winCheck(board, payload.row, payload.col)) {
-        const winner = `${matchPlayer(!game.currentTurn).slice(6,7)}`;
         game.status = 'finished';
-        game.winner = winner;
+        game.winner = matchPlayer(!game.currentTurn).slice(6,7);
         await game.save();
         io.to(game._id).emit('game end', winner);
       }

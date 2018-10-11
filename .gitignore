@@ -7,10 +7,10 @@
 /coverage
 
 # production
-/build
+#/build
 
 #config
-nodemon.json
+#nodemon.json
 
 # misc
 .DS_Store

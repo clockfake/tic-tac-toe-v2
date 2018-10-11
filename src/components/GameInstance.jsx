@@ -149,8 +149,8 @@ class GameInstance extends Component {
   render() {
     if (!this.state.board) return (
         <div>
-          <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerX !==null} onClick={() => this.joinGame(false)}>join game as X</Button>
-          <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerO !==null} onClick={() => this.joinGame(true)}>join game as O</Button>
+          <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerX !== null} onClick={() => this.joinGame(false)}>join game as X</Button>
+          <Button variant="contained" className={this.props.classes.button} disabled={this.state.playerO !== null} onClick={() => this.joinGame(true)}>join game as O</Button>
           {this.snackBar()}
         </div>
       );
@@ -158,7 +158,7 @@ class GameInstance extends Component {
       <div className={this.props.classes.field}>
       <Board board={this.state.board} makeTurn={(row, col) => this.makeTurn(row, col)}/>
       <div className={this.props.classes.info}>
-      {this.state.winner && <Typography variant="h6">Game is finished, winner is {this.state.winner}</Typography>}
+      {this.state.winner && <Typography variant="h6">Game finished, winner is {this.state.winner}</Typography>}
       {this.state.winner && <Button variant="outlined" color="primary" component={Link} to="/">Back to main page</Button>}
       {!this.state.winner && <p>Current turn: {this.state.currentTurn ? 'O' : 'X'}</p>}
       {this.snackBar()}

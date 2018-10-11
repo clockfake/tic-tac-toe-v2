@@ -1,0 +1,12 @@
+{
+  "env": {
+    "MONGO_ATLAS_PW": "node-admin",
+    "JWT_KEY": "AYAYA"
+  },
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    "src/",
+    "public"
+  ]
+}
